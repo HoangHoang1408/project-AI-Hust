@@ -97,16 +97,27 @@ class ChessGame:
                 self.two_squares = [self.current_square]
 
     def handle_key_down(self, key: int):
-        if (
-            key == pg.K_b
-            and len(self.board.move_stack) > 0
-            and (not self.board.is_game_over())
-        ):
-            self.board.pop()
-        if key == pg.K_r:
+        def reset():
             self.board.reset()
             self.current_square = None
             self.two_squares = []
+
+        def undo():
+            if len(self.board.move_stack) > 0 and not self.board.is_game_over():
+                self.board.pop()
+                if (
+                    self.player1_is_human
+                    and not self.player2_is_human
+                    or self.player2_is_human
+                    and not self.player1_is_human
+                ):
+                    self.board.pop()
+
+        if key == pg.K_b:
+            undo()
+
+        if key == pg.K_r:
+            reset()
 
     # draw methods
     def draw(self):
