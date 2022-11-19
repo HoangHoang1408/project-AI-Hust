@@ -11,7 +11,7 @@ class ChessGame:
         player2_is_human=True,
         level: int = 1,
     ) -> None:
-        self.WIDTH = self.HEIGHT = 512
+        self.WIDTH = self.HEIGHT = 720
         self.DIMENSION = 8
         self.PIECE_SIZE = self.HEIGHT // self.DIMENSION
         self.MAX_FPS = 15
@@ -26,6 +26,7 @@ class ChessGame:
         self.player2_is_human = player2_is_human
 
         self.running = True
+        self.pausing = False
         self.current_square = None  # (col, row) tuple
         self.two_squares = []
 
@@ -46,11 +47,11 @@ class ChessGame:
             for e in pg.event.get():
                 if e.type == pg.QUIT:
                     self.handle_quit()
-                elif e.type == pg.MOUSEBUTTONDOWN and humen_turn:
+                elif e.type == pg.MOUSEBUTTONDOWN and humen_turn and not self.pausing:
                     self.human_move()
                 elif e.type == pg.KEYDOWN:
                     self.handle_key_down(e.key)
-            if not humen_turn:
+            if not humen_turn and not self.pausing:
                 self.ai_move()
             self.draw()
 
@@ -113,11 +114,17 @@ class ChessGame:
                 ):
                     self.board.pop()
 
+        def toggle_pause():
+            self.pausing = not self.pausing
+
         if key == pg.K_b:
             undo()
 
         if key == pg.K_r:
             reset()
+
+        if key == pg.K_p:
+            toggle_pause()
 
     # draw methods
     def draw(self):
@@ -125,6 +132,7 @@ class ChessGame:
         self.draw_pieces()
         self.draw_highlight_squares()
         self.draw_game_over_text()
+        self.draw_pause_text()
         self.clock.tick(self.MAX_FPS)
         pg.display.flip()
 
@@ -176,8 +184,15 @@ class ChessGame:
             text = "Draw by 75 moves rule"
         elif self.board.is_fivefold_repetition():
             text = "Draw by fivefold repetition"
+        self.draw_text_in_the_middle(text)
 
-        font = pg.font.SysFont("Rboto", 32, True, False)
+    def draw_pause_text(self):
+        if not self.pausing:
+            return
+        self.draw_text_in_the_middle("Pausing")
+
+    def draw_text_in_the_middle(self, text):
+        font = pg.font.SysFont("Rboto", 45, True, False)
         text_object = font.render(text, 0, pg.Color("Black"))
         text_location = pg.Rect(0, 0, self.WIDTH, self.HEIGHT).move(
             self.WIDTH / 2 - text_object.get_width() / 2,
@@ -210,9 +225,11 @@ class ChessGame:
         white_piece_names = ["B", "K", "N", "P", "Q", "R"]
         black_piece_names = ["b", "k", "n", "p", "q", "r"]
         for piece in white_piece_names:
-            self.IMAGES[piece] = pg.image.load(f"./images/w{piece}.png")
+            self.IMAGES[piece] = pg.image.load(f"./images/w{piece}_new.png")
         for piece in black_piece_names:
-            self.IMAGES[piece] = pg.image.load(f"./images/b{piece.capitalize()}.png")
+            self.IMAGES[piece] = pg.image.load(
+                f"./images/b{piece.capitalize()}_new.png"
+            )
 
     # util methods
     def get_uci_move_from_row_col(
