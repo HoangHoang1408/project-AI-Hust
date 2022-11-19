@@ -10,14 +10,18 @@ class ChessGame:
         player1_is_human=True,
         player2_is_human=True,
         level: int = 1,
+        game_speed: int = 2,  # from 1 => 3
     ) -> None:
         self.WIDTH = self.HEIGHT = 720
         self.DIMENSION = 8
         self.PIECE_SIZE = self.HEIGHT // self.DIMENSION
         self.MAX_FPS = 15
         self.IMAGES = {}
+        self.game_speed = game_speed
+        self.MAX_WAIT_TIME = 300  # ms
 
         self.screen = pg.display.set_mode((self.WIDTH, self.HEIGHT))
+        self.colors = [pg.Color("white"), pg.Color("gray")]
         self.board = chess.Board()
         self.clock = pg.time.Clock()
 
@@ -54,6 +58,7 @@ class ChessGame:
             if not humen_turn and not self.pausing:
                 self.ai_move()
             self.draw()
+            pg.time.wait(self.MAX_WAIT_TIME // self.game_speed)
 
     # handle methods
     def handle_quit(self):
@@ -137,12 +142,11 @@ class ChessGame:
         pg.display.flip()
 
     def draw_board(self):
-        colors = [pg.Color("white"), pg.Color("gray")]
         for r in range(self.DIMENSION):
             for c in range(self.DIMENSION):
                 pg.draw.rect(
                     self.screen,
-                    colors[(r + c) % 2],
+                    self.colors[(r + c) % 2],
                     pg.Rect(
                         c * self.PIECE_SIZE,
                         (r) * self.PIECE_SIZE,
