@@ -18,7 +18,7 @@ class ChessGame:
         self.MAX_FPS = 15
         self.IMAGES = {}
         self.game_speed = game_speed
-        self.MAX_WAIT_TIME = 300  # ms
+        self.MAX_WAIT_TIME = 500  # ms
 
         self.screen = pg.display.set_mode((self.WIDTH, self.HEIGHT))
         self.colors = [pg.Color("white"), pg.Color("gray")]
