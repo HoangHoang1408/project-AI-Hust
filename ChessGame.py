@@ -9,7 +9,7 @@ class ChessGame:
         self,
         player1_is_human=True,
         player2_is_human=True,
-        level: int = 1,
+        ai_level: int = 3,
         game_speed: int = 2,  # from 1 => 3
     ) -> None:
         self.WIDTH = self.HEIGHT = 720
@@ -25,7 +25,7 @@ class ChessGame:
         self.board = chess.Board()
         self.clock = pg.time.Clock()
 
-        self.move_finder = MoveFinder(self.board, level)
+        self.move_finder = MoveFinder(self.board, ai_level)
         self.player1_is_human = player1_is_human
         self.player2_is_human = player2_is_human
 
