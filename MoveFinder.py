@@ -1,4 +1,5 @@
 import random
+import time
 
 import chess
 import numpy as np
@@ -284,17 +285,42 @@ class MoveFinder:
     def minimax2(self, max_depth: int):
         global candidate_move
         candidate_move = None
+        # branch_len = len(list(self.board.legal_moves))
+        # start_time = time.time()
         self.minimax_score2(0, max_depth, -9999, 9999)
         if candidate_move is None:
             return self.random_move()
+        # end_time = time.time()
+        # with open('./metric/depth_5.csv','a') as f:
+            # f.write(f'{branch_len},{end_time-start_time}\n')
         return candidate_move
+    
+    def minimax3(self):
+        global candidate_move
+        candidate_move = None
+        branch_len = len(list(self.board.legal_moves))
+        piece_left = len(self.board.piece_map())
+        if piece_left <= 4:
+            self.minimax2(7)
+        elif piece_left <= 7:
+            self.minimax2(6)
+        elif 0<= branch_len <=15:
+            self.minimax2(5)
+        elif branch_len >= 56:
+            self.minimax2(6)
+        else:
+            self.minimax2(4)
+        if candidate_move is None:
+            return self.random_move()
+        return candidate_move
+                
 
     def cal_piece_score(self,tp:tuple[int,chess.Piece]):
         index, piece = tp
         return POSITIOIN_SCORES[piece.symbol()][index] + PIECE_SCORES[piece.symbol()]
 
     def calculate_board_score(self):
-        return np.sum(np.array(tuple(self.cal_piece_score(x) for x in self.board.piece_map().items())))
+        return sum(tuple(self.cal_piece_score(x) for x in self.board.piece_map().items()))
         
 
     def get_move(self):
@@ -304,6 +330,6 @@ class MoveFinder:
             2: lambda: self.minimax2(2),
             3: lambda: self.minimax2(3),
             4: lambda: self.minimax2(4),
-            5: lambda: self.minimax2(5),  # còn chậm chưa ổn định
+            5: self.minimax3
         }
         return switcher.get(self.level, self.random_move)()
