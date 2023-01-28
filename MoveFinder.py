@@ -3,6 +3,7 @@ import time
 
 import chess
 import numpy as np
+from Eval import Eval
 
 # points of chess pieces
 PIECE_SCORES = {
@@ -158,76 +159,7 @@ class MoveFinder:
 
     def random_move(self):
         return random.choice(tuple(self.board.legal_moves))
-
-    # minimax algorithm
-
-    ##### old version
-
-    # def minimax_score(
-    #     self,
-    #     depth: int,
-    #     max_depth: int,
-    #     candidate_move: list[chess.Move],
-    #     alpha: int,
-    #     beta: int,
-    # ):
-    #     if self.board.is_game_over():
-    #         if self.board.is_checkmate():
-    #             if self.board.turn:
-    #                 return CHECK_MATE
-    #             else:
-    #                 return -CHECK_MATE
-    #         else:
-    #             return DRAW
-
-    #     if depth == max_depth:
-    #         return self.calculate_board_score()
-
-    #     if self.board.turn:
-    #         max_evaluation = -9999
-    #         for move in self.board.legal_moves:
-    #             self.board.push(move)
-    #             evaluation = self.minimax_score(
-    #                 depth + 1, max_depth, candidate_move, alpha, beta
-    #             )
-    #             if evaluation > max_evaluation:
-    #                 max_evaluation = evaluation
-    #                 if depth == 0:
-    #                     candidate_move.clear()
-    #                     candidate_move.append(move)
-    #             elif evaluation == max_evaluation and depth == 0:
-    #                 candidate_move.append(move)
-    #             alpha = max(alpha, evaluation)
-    #             self.board.pop()
-    #             if alpha > beta:
-    #                 break
-    #         return max_evaluation
-
-    #     else:
-    #         min_evaluation = 9999
-    #         for move in self.board.legal_moves:
-    #             self.board.push(move)
-    #             evaluation = self.minimax_score(
-    #                 depth + 1, max_depth, candidate_move, alpha, beta
-    #             )
-    #             if evaluation < min_evaluation:
-    #                 min_evaluation = evaluation
-    #                 if depth == 0:
-    #                     candidate_move.clear()
-    #                     candidate_move.append(move)
-    #             elif evaluation == min_evaluation and depth == 0:
-    #                 candidate_move.append(move)
-    #             beta = min(beta, evaluation)
-    #             self.board.pop()
-    #             if alpha > beta:
-    #                 break
-    #         return min_evaluation
-    # def minimax(self, max_depth: int):
-    #     candidate_move: list[chess.Move] = []
-    #     self.minimax_score(0, max_depth, candidate_move, -9999, 9999)
-    #     return random.choice(candidate_move)
-
-    ###  version 2
+        
     def minimax_score2(
         self,
         depth: int,
@@ -320,7 +252,8 @@ class MoveFinder:
         return POSITIOIN_SCORES[piece.symbol()][index] + PIECE_SCORES[piece.symbol()]
 
     def calculate_board_score(self):
-        return sum(tuple(self.cal_piece_score(x) for x in self.board.piece_map().items()))
+        # return sum(tuple(self.cal_piece_score(x) for x in self.board.piece_map().items()))
+        return Eval(self.board).evaluate()
         
 
     def get_move(self):

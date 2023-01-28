@@ -1,6 +1,7 @@
 import chess
 import pygame as pg
 
+from Eval import Eval
 from MoveFinder import MoveFinder
 
 
@@ -70,6 +71,8 @@ class ChessGame:
             return
         move = self.move_finder.get_move()
         self.board.push(move)
+        eval = Eval(self.board)
+        print("hello from pawn structure", eval.eval_pawn_structure())
 
     def human_move(self):
         if self.board.is_game_over():
