@@ -5,14 +5,23 @@ import pygame as pg
 
 from MoveFinder import MoveFinder
 
+# game modes
+# 0: human vs human
+# 1: human vs ai
+# 2: ai vs ai
 
-class ChessGame:
+# mode 0 => ko truyền vào gì
+# mode 1 => truyền vào ai_side (True or False) là phía của AI, ai_1_level là level của AI
+# mode 2 => truyền vào ai_1_level và ai_2_level là level của 2 AI
+
+
+class ChessGame2:
     def __init__(
         self,
-        player1_is_human=True,
-        player2_is_human=True,
-        ai_level: int = 3,
-        game_speed: int = 2,  # from 1 => 3
+        ai_side: bool = None,
+        ai_1_level: int = None,
+        ai_2_level: int = None,
+        game_speed: int = 2,
     ) -> None:
         self.WIDTH = self.HEIGHT = 720
         self.DIMENSION = 8
@@ -27,16 +36,32 @@ class ChessGame:
         self.board = chess.Board()
         self.clock = pg.time.Clock()
 
-        self.move_finder = MoveFinder(self.board, ai_level)
-        self.player1_is_human = player1_is_human
-        self.player2_is_human = player2_is_human
+        self.ai_side = ai_side
+        self.ai_1_level = ai_1_level
+        self.ai_2_level = ai_2_level
+
+        if ai_1_level is not None:
+            self.move_finder1 = MoveFinder(
+                self.board,
+                ai_1_level,
+            )
+        if ai_2_level is not None:
+            self.move_finder2 = MoveFinder(
+                self.board,
+                ai_2_level,
+            )
+
+        self.player1_is_human = (
+            self.ai_side is None and self.ai_2_level is None
+        ) or self.ai_side == False
+        self.player2_is_human = (
+            self.ai_side is None and self.ai_2_level is None
+        ) or self.ai_side == True
 
         self.running = True
         self.pausing = False
         self.current_square = None  # (col, row) tuple
         self.two_squares = []
-        self.move_finder1 = MoveFinder(self.board, 4, 0)
-        self.move_finder2 = MoveFinder(self.board, 4, 1)
 
     def start(self):
         self.init_game()
@@ -72,9 +97,12 @@ class ChessGame:
     def ai_move(self):
         if self.board.is_game_over():
             return
-        # move = self.move_finder.get_move()
-        if self.board.turn:
-            move = self.move_finder2.get_move()
+        two_ai = self.player1_is_human == self.player2_is_human
+        if two_ai:
+            if self.board.turn:
+                move = self.move_finder2.get_move()
+            else:
+                move = self.move_finder1.get_move()
         else:
             move = self.move_finder1.get_move()
         self.board.push(move)

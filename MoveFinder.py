@@ -1,166 +1,33 @@
 import random
-import time
+
+# add the evals folder to the path
+import sys
 
 import chess
-import numpy as np
-from Eval import Eval
 
-# points of chess pieces
-PIECE_SCORES = {
-    "K": 0,
-    "Q": 900,
-    "R": 500,
-    "B": 330,
-    "N": 320,
-    "P": 100,
-    "k": -0,
-    "q": -900,
-    "r": -500,
-    "b": -330,
-    "n": -320,
-    "p": -100,
-}
-POSITIOIN_SCORES = {
-    'p':[
-  0,  0,  0,  0,  0,  0,  0,  0,
--50,-50,-50,-50,-50,-50,-50,-50,
--10,-10,-20,-30,-30,-20,-10,-10,
- -5, -5,-10,-25,-25,-10, -5, -5,
-  0,  0,  0,-20,-20,  0,  0,  0,
- -5,  5, 10,  0,  0, 10,  5, -5,
- -5,-10,-10, 20, 20,-10,-10, -5,
-  0,  0,  0,  0,  0,  0,  0,  0
-    ],
-    'n':[
- 50, 40, 30, 30, 30, 30, 40, 50,
- 40, 20,  0,  0,  0,  0, 20, 40,
- 30,  0,-10,-15,-15,-10,  0, 30,
- 30, -5,-15,-20,-20,-15, -5, 30,
- 30,  0,-15,-20,-20,-15,  0, 30,
- 30, -5,-10,-15,-15,-10, -5, 30,
- 40, 20,  0,  5,  5,  0, 20, 40,
- 50, 40, 30, 30, 30, 30, 40, 50,
-    ],
-    'b':[
- 20, 10, 10, 10, 10, 10, 10, 20,
- 10,  0,  0,  0,  0,  0,  0, 10,
- 10,  0, -5,-10,-10, -5,  0, 10,
- 10, -5, -5,-10,-10, -5, -5, 10,
- 10,  0,-10,-10,-10,-10,  0, 10,
- 10,-10,-10,-10,-10,-10,-10, 10,
- 10, -5,  0,  0,  0,  0, -5, 10,
- 20, 10, 10, 10, 10, 10, 10, 20,
-    ],
-    'r':[
-  0,  0,  0,  0,  0,  0,  0,  0,
- -5,-10,-10,-10,-10,-10,-10, -5,
-  5,  0,  0,  0,  0,  0,  0,  5,
-  5,  0,  0,  0,  0,  0,  0,  5,
-  5,  0,  0,  0,  0,  0,  0,  5,
-  5,  0,  0,  0,  0,  0,  0,  5,
-  5,  0,  0,  0,  0,  0,  0,  5,
-  0,  0,  0, -5, -5,  0,  0,  0
-    ],
-    'q':[
- 20, 10, 10,  5,  5, 10, 10, 20,
- 10,  0,  0,  0,  0,  0,  0, 10,
- 10,  0, -5, -5, -5, -5,  0, 10,
-  5,  0, -5, -5, -5, -5,  0,  5,
-  0,  0, -5, -5, -5, -5,  0,  5,
- 10, -5, -5, -5, -5, -5,  0, 10,
- 10,  0, -5,  0,  0,  0,  0, 10,
- 20, 10, 10,  5,  5, 10, 10, 20
-    ],
-    'k':[
- 30, 40, 40, 50, 50, 40, 40, 30,
- 30, 40, 40, 50, 50, 40, 40, 30,
- 30, 40, 40, 50, 50, 40, 40, 30,
- 30, 40, 40, 50, 50, 40, 40, 30,
- 20, 30, 30, 40, 40, 30, 30, 20,
- 10, 20, 20, 20, 20, 20, 20, 10,
--20,-20,  0,  0,  0,  0,-20,-20,
--20,-30,-10,  0,  0,-10,-30,-20
-    ],
-    
-    'P':[
-  0,  0,  0,  0,  0,  0,  0,  0,
-  5, 10, 10,-20,-20, 10, 10,  5,
-  5, -5,-10,  0,  0,-10, -5,  5,
-  0,  0,  0, 20, 20,  0,  0,  0,
-  5,  5, 10, 25, 25, 10,  5,  5,
- 10, 10, 20, 30, 30, 20, 10, 10,
- 50, 50, 50, 50, 50, 50, 50, 50,
-  0,  0,  0,  0,  0,  0,  0,  0,
-    ],
-    'N':[
--50,-40,-30,-30,-30,-30,-40,-50,
--40,-20,  0,  5,  5,  0,-20,-40,
--30,  5, 10, 15, 15, 10,  5,-30,
--30,  0, 15, 20, 20, 15,  0,-30,
--30,  5, 15, 20, 20, 15,  5,-30,
--30,  0, 10, 15, 15, 10,  0,-30,
--40,-20,  0,  0,  0,  0,-20,-40,
--50,-40,-30,-30,-30,-30,-40,-50,
-    ],
-    'B':[
--20,-10,-10,-10,-10,-10,-10,-20,
--10,  5,  0,  0,  0,  0,  5,-10,
--10, 10, 10, 10, 10, 10, 10,-10,
--10,  0, 10, 10, 10, 10,  0,-10,
--10,  5,  5, 10, 10,  5,  5,-10,
--10,  0,  5, 10, 10,  5,  0,-10,
--10,  0,  0,  0,  0,  0,  0,-10,
--20,-10,-10,-10,-10,-10,-10,-20,
-    ],
-    'R':[
-  0,  0,  0,  5,  5,  0,  0,  0,
- -5,  0,  0,  0,  0,  0,  0, -5,
- -5,  0,  0,  0,  0,  0,  0, -5,
- -5,  0,  0,  0,  0,  0,  0, -5,
- -5,  0,  0,  0,  0,  0,  0, -5,
- -5,  0,  0,  0,  0,  0,  0, -5,
-  5, 10, 10, 10, 10, 10, 10,  5,
-  0,  0,  0,  0,  0,  0,  0,  0,
-    ],
-    'Q':[
--20,-10,-10, -5, -5,-10,-10,-20,
--10,  0,  5,  0,  0,  0,  0,-10,
--10,  5,  5,  5,  5,  5,  0,-10,
-  0,  0,  5,  5,  5,  5,  0, -5,
- -5,  0,  5,  5,  5,  5,  0, -5,
--10,  0,  5,  5,  5,  5,  0,-10,
--10,  0,  0,  0,  0,  0,  0,-10,
--20,-10,-10, -5, -5,-10,-10,-20,
-    ],
-    'K':[
- 20, 30, 10,  0,  0, 10, 30, 20,
- 20, 20,  0,  0,  0,  0, 20, 20,
--10,-20,-20,-20,-20,-20,-20,-10,
--20,-30,-30,-40,-40,-30,-30,-20,
--30,-40,-40,-50,-50,-40,-40,-30,
--30,-40,-40,-50,-50,-40,-40,-30,
--30,-40,-40,-50,-50,-40,-40,-30,
--30,-40,-40,-50,-50,-40,-40,-30,
-    ],
-}
+sys.path.append("evals")
+from evals.Eval import Eval
+from evals.Eval2 import Eval2
 
-CHECK_MATE = 20000
+# constants
+CHECK_MATE = 1000000
 DRAW = 0
-CHESS_INDICES = np.array(tuple(chess.SQUARES))
-
+UPPER_BOUND = 99999
 
 candidate_move = None
 
-i = 0
+
 class MoveFinder:
-    def __init__(self, board: chess.Board, level: int):
+    def __init__(self, board: chess.Board, level: int, ev: int = 0):
         self.level = level
         self.board = board
+        self.evals = [Eval(self.board), Eval2(self.board)]
+        self.eval = self.evals[ev]
 
     def random_move(self):
         return random.choice(tuple(self.board.legal_moves))
-        
-    def minimax_score2(
+
+    def minimax_score(
         self,
         depth: int,
         max_depth: int,
@@ -178,15 +45,16 @@ class MoveFinder:
                 return DRAW
 
         if depth == max_depth:
-            return self.calculate_board_score()
+            return self.eval.evaluate()
 
         if self.board.turn:
-            max_evaluation = -9999
-            search_moves = np.array(tuple(self.board.legal_moves))
-            np.random.shuffle(search_moves)
-            for move in search_moves:
+            max_evaluation = -UPPER_BOUND
+            moves = list(self.board.legal_moves)
+            random.shuffle(moves)
+            for move in moves:
+            # for move in self.board.legal_moves:
                 self.board.push(move)
-                evaluation = self.minimax_score2(depth + 1, max_depth, alpha, beta)
+                evaluation = self.minimax_score(depth + 1, max_depth, alpha, beta)
                 if evaluation > max_evaluation:
                     max_evaluation = evaluation
                     if depth == 0:
@@ -198,12 +66,13 @@ class MoveFinder:
             return max_evaluation
 
         else:
-            min_evaluation = 9999
-            search_moves = np.array(tuple(self.board.legal_moves))
-            np.random.shuffle(search_moves)
-            for move in search_moves:
+            min_evaluation = UPPER_BOUND
+            moves = list(self.board.legal_moves)
+            random.shuffle(moves)
+            for move in moves:
+            # for move in self.board.legal_moves:
                 self.board.push(move)
-                evaluation = self.minimax_score2(depth + 1, max_depth, alpha, beta)
+                evaluation = self.minimax_score(depth + 1, max_depth, alpha, beta)
                 if evaluation < min_evaluation:
                     min_evaluation = evaluation
                     if depth == 0:
@@ -214,55 +83,11 @@ class MoveFinder:
                     break
             return min_evaluation
 
-    def minimax2(self, max_depth: int):
-        global candidate_move
-        candidate_move = None
-        # branch_len = len(list(self.board.legal_moves))
-        # start_time = time.time()
-        self.minimax_score2(0, max_depth, -9999, 9999)
-        if candidate_move is None:
-            return self.random_move()
-        # end_time = time.time()
-        # with open('./metric/depth_5.csv','a') as f:
-            # f.write(f'{branch_len},{end_time-start_time}\n')
-        return candidate_move
-    
-    def minimax3(self):
-        global candidate_move
-        candidate_move = None
-        branch_len = len(list(self.board.legal_moves))
-        piece_left = len(self.board.piece_map())
-        if piece_left <= 4:
-            self.minimax2(7)
-        elif piece_left <= 7:
-            self.minimax2(6)
-        elif 0<= branch_len <=15:
-            self.minimax2(5)
-        elif branch_len >= 56:
-            self.minimax2(6)
-        else:
-            self.minimax2(4)
-        if candidate_move is None:
-            return self.random_move()
-        return candidate_move
-                
-
-    def cal_piece_score(self,tp:tuple[int,chess.Piece]):
-        index, piece = tp
-        return POSITIOIN_SCORES[piece.symbol()][index] + PIECE_SCORES[piece.symbol()]
-
-    def calculate_board_score(self):
-        # return sum(tuple(self.cal_piece_score(x) for x in self.board.piece_map().items()))
-        return Eval(self.board).evaluate()
-        
-
     def get_move(self):
-        switcher = {
-            0: self.random_move,
-            1: lambda: self.minimax2(1),
-            2: lambda: self.minimax2(2),
-            3: lambda: self.minimax2(3),
-            4: lambda: self.minimax2(4),
-            5: self.minimax3
-        }
-        return switcher.get(self.level, self.random_move)()
+        global candidate_move
+        candidate_move = None
+        self.minimax_score(0, self.level, -UPPER_BOUND, UPPER_BOUND)
+        if candidate_move is None:
+            return self.random_move()
+        return candidate_move
+
