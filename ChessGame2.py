@@ -22,6 +22,7 @@ class ChessGame2:
         ai_1_level: int = None,
         ai_2_level: int = None,
         game_speed: int = 2,
+        screen: pg.Surface = None,
     ) -> None:
         self.WIDTH = self.HEIGHT = 720
         self.DIMENSION = 8
@@ -31,7 +32,7 @@ class ChessGame2:
         self.game_speed = game_speed
         self.MAX_WAIT_TIME = 500  # ms
 
-        self.screen = pg.display.set_mode((self.WIDTH, self.HEIGHT))
+        self.screen = screen or pg.display.set_mode((self.WIDTH, self.HEIGHT))
         self.colors = [pg.Color("white"), pg.Color("gray")]
         self.board = chess.Board()
         self.clock = pg.time.Clock()
@@ -68,7 +69,7 @@ class ChessGame2:
         self.main_loop()
 
     def init_game(self):
-        pg.init()
+        # pg.init()
         self.load_images()
         self.screen.fill(pg.Color("white"))
 
