@@ -161,6 +161,7 @@ class ChessGame2:
     # draw methods
     def draw(self):
         self.draw_board()
+        self.draw_moved_square()
         self.draw_pieces()
         self.draw_highlight_squares()
         self.draw_game_over_text()
@@ -250,6 +251,28 @@ class ChessGame2:
                         chess.square_rank(move.to_square) * self.PIECE_SIZE,
                     ),
                 )
+
+    def draw_moved_square(self):
+        if len(self.board.move_stack) == 0:
+            return
+        last_move = self.board.move_stack[-1]
+        s = pg.Surface((self.PIECE_SIZE, self.PIECE_SIZE))
+        s.set_alpha(100)
+        s.fill(pg.Color("yellow"))
+        self.screen.blit(
+            s,
+            (
+                chess.square_file(last_move.from_square) * self.PIECE_SIZE,
+                chess.square_rank(last_move.from_square) * self.PIECE_SIZE,
+            ),
+        )
+        self.screen.blit(
+            s,
+            (
+                chess.square_file(last_move.to_square) * self.PIECE_SIZE,
+                chess.square_rank(last_move.to_square) * self.PIECE_SIZE,
+            ),
+        )
 
     # init methods
     def load_images(self):
