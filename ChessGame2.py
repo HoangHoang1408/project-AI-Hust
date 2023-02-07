@@ -1,4 +1,5 @@
 from multiprocessing import Process, Queue
+from time import time
 
 import chess
 import pygame as pg
@@ -76,7 +77,7 @@ class ChessGame2:
                     self.human_move()
                 elif e.type == pg.KEYDOWN:
                     self.handle_key_down(e.key)
-            if not humen_turn and not self.pausing:
+            if not humen_turn and not self.pausing and not self.board.is_game_over():
                 self.ai_move()
             self.draw()
             pg.time.wait(self.MAX_WAIT_TIME // self.game_speed)
@@ -87,8 +88,6 @@ class ChessGame2:
         pg.quit()
 
     def ai_move(self):
-        if self.board.is_game_over():
-            return
         two_ai = self.player1_is_human == self.player2_is_human
         if two_ai:
             if self.board.turn:

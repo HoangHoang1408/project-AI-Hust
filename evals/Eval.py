@@ -333,8 +333,8 @@ constants = {
     QUEEN_BLACK: {},
     KING_BLACK: {}
   },
-  'n_adj': [-20, -16, -12, -8, -4,  0,  4,  8, 12],
-  'r_adj': [ 15,  12,   9,  6,  3,  0, -3, -6, -9],
+  'n_adj': [-20, -16, -12, -8, -4,  0,  4,  8, 12], # điểm điều chỉnh của mã
+  'r_adj': [ 15,  12,   9,  6,  3,  0, -3, -6, -9], # điểm điều chỉnh của xe
   'safety_table': [
       0,   0,   1,   2,   3,   5,   7,   9,  12,  15,
      18,  22,  26,  30,  35,  39,  44,  50,  56,  62,
@@ -903,24 +903,6 @@ class Eval:
     self.evaluate_blockages()
     mgScore += self.e_constants['king_shield'][WHITE] - self.e_constants['king_shield'][BLACK]
 
-    if self.board.turn == WHITE:
-      result += constants['tempo']
-    else:
-      result -= constants['tempo']
-
-    # adjust material score
-    if (pc[BISHOP_WHITE] > 1):
-      self.e_constants['adjust_material'][WHITE] += constants['bishop_pair']
-    if (pc[BISHOP_BLACK] > 1):
-      self.e_constants['adjust_material'][BLACK] += constants['bishop_pair']
-    if (pc[KNIGHT_WHITE] > 1):
-      self.e_constants['adjust_material'][WHITE] -= constants['p_knight_pair']
-    if (pc[KNIGHT_BLACK] > 1):
-      self.e_constants['adjust_material'][BLACK] -= constants['p_knight_pair']
-    if (pc[ROOK_WHITE] > 1):
-      self.e_constants['adjust_material'][WHITE] -= constants['p_rook_pair']
-    if (pc[ROOK_BLACK] > 1):
-      self.e_constants['adjust_material'][BLACK] -= constants['p_rook_pair']
     
     self.e_constants['adjust_material'][WHITE] += constants['n_adj'][pc[PAWN_WHITE]] * pc[KNIGHT_WHITE]
     self.e_constants['adjust_material'][BLACK] += constants['n_adj'][pc[PAWN_BLACK]] * pc[KNIGHT_BLACK]
