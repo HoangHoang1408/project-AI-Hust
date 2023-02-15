@@ -82,6 +82,7 @@ def select_mode(screen):
         mode_modul = pygame.Rect(360, 50, 200, 50)
         mode_modul_color = white
 
+
         # node to next
         font_big = pygame.font.Font(None, 40)
         next = pygame.Rect(360, 600, 200, 50)
