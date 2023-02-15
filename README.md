@@ -10,4 +10,4 @@
 - Ong Thế Tùng 20204619
 
 ## Chạy chương trình
-- Chạy file mail.py
+- Chạy file main.py
