@@ -87,6 +87,7 @@ class ChessGame2:
         self.running = False
         pg.quit()
 
+
     def ai_move(self):
         two_ai = self.player1_is_human == self.player2_is_human
         if two_ai:
