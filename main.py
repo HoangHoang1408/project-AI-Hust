@@ -9,6 +9,8 @@ red = (255, 0, 0)
 # Set font
 
 
+# def func():
+
 def start_game():
     pygame.init()
 
@@ -108,7 +110,8 @@ def select_mode(screen):
         screen.blit(man_man_text, (man_man.x + 10, man_man.y + 10))
         screen.blit(man_machine_text, (man_machine.x + 10, man_machine.y + 10))
         screen.blit(
-            machine_machine_text, (machine_machine.x + 10, machine_machine.y + 10)
+            machine_machine_text, (machine_machine.x +
+                                   10, machine_machine.y + 10)
         )
 
         pygame.display.update()
@@ -435,15 +438,21 @@ def select_depth_two_machine(screen):
         screen.blit(depth_text, (depth_modul.x + 10, depth_modul.y + 10))
         screen.blit(depth_one_text, (m1_depth_one.x + 10, m1_depth_one.y + 10))
         screen.blit(depth_two_text, (m1_depth_two.x + 10, m1_depth_two.y + 10))
-        screen.blit(depth_three_text, (m1_depth_three.x + 10, m1_depth_three.y + 10))
-        screen.blit(depth_four_text, (m1_depth_four.x + 10, m1_depth_four.y + 10))
-        screen.blit(depth_five_text, (m1_depth_five.x + 10, m1_depth_five.y + 10))
+        screen.blit(depth_three_text,
+                    (m1_depth_three.x + 10, m1_depth_three.y + 10))
+        screen.blit(depth_four_text,
+                    (m1_depth_four.x + 10, m1_depth_four.y + 10))
+        screen.blit(depth_five_text,
+                    (m1_depth_five.x + 10, m1_depth_five.y + 10))
 
         screen.blit(depth_one_text, (m2_depth_one.x + 10, m2_depth_one.y + 10))
         screen.blit(depth_two_text, (m2_depth_two.x + 10, m2_depth_two.y + 10))
-        screen.blit(depth_three_text, (m2_depth_three.x + 10, m2_depth_three.y + 10))
-        screen.blit(depth_four_text, (m2_depth_four.x + 10, m2_depth_four.y + 10))
-        screen.blit(depth_five_text, (m2_depth_five.x + 10, m2_depth_five.y + 10))
+        screen.blit(depth_three_text,
+                    (m2_depth_three.x + 10, m2_depth_three.y + 10))
+        screen.blit(depth_four_text,
+                    (m2_depth_four.x + 10, m2_depth_four.y + 10))
+        screen.blit(depth_five_text,
+                    (m2_depth_five.x + 10, m2_depth_five.y + 10))
 
         pygame.display.update()
 
